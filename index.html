@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>VLC Player | البث المباشر الحصري</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #121212, #1e1e1e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .player-card {
+            max-width: 550px;
+            width: 100%;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 48px;
+            padding: 40px 28px;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,136,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffaa33, #ff6600);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 30px;
+            border-bottom: 1px dashed #333;
+            display: inline-block;
+            padding-bottom: 6px;
+        }
+        .btn-play {
+            background: #ff8800;
+            border: none;
+            border-radius: 60px;
+            padding: 18px 20px;
+            width: 100%;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 25px rgba(255,136,0,0.4);
+            margin: 20px 0 25px;
+        }
+        .btn-play:active {
+            transform: scale(0.97);
+            background: #e07a00;
+        }
+        .info-box {
+            background: #252525;
+            border-radius: 24px;
+            padding: 20px;
+            text-align: right;
+            border-right: 4px solid #ff8800;
+        }
+        .info-box p {
+            color: #ccc;
+            font-size: 14px;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+        .footer {
+            font-size: 11px;
+            color: #555;
+            margin-top: 30px;
+            text-align: center;
+        }
+        /* رسالة لغير الأندرويد */
+        .not-android-msg {
+            display: none;
+            background: #2a1a00;
+            color: #ffb84d;
+            padding: 16px;
+            border-radius: 16px;
+            margin-top: 20px;
+            font-size: 15px;
+            border: 1px solid #ff8800;
+            text-align: center;
+        }
+        @media (max-width: 500px) {
+            .player-card { padding: 25px 20px; }
+            .btn-play { font-size: 20px; padding: 15px; }
+            h1 { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-card">
+    <div class="icon-large">📺</div>
+    <h1>VLC المشغل الحصري</h1>
+    <div id="platformSub" class="sub">للأندرويد فقط</div>
+
+    <!-- زر التشغيل (يُخفى لغير أندرويد عبر JS) -->
+    <button id="launchVlcBtn" class="btn-play">
+        <span>▶</span> تشغيل البث المباشر
+    </button>
+
+    <!-- رسالة ظاهرة فقط للأجهزة غير الأندرويد -->
+    <div id="notAndroidMsg" class="not-android-msg">
+        ⚠️ هذه الخدمة تعمل حصراً على أجهزة <strong>Android</strong> بواسطة تطبيق <strong>VLC Player</strong>.<br>
+        يرجى فتح الرابط من جهاز أندرويد مثبت عليه VLC.
+    </div>
+
+    <div class="info-box">
+        <p>🔒 <strong>آلية آمنة</strong></p>
+        <p>• إذا كان <strong>VLC مثبتاً</strong>: سيفتح التطبيق ويعمل البث فوراً.</p>
+        <p>• إذا لم يكن <strong>VLC غير مثبت</strong>: سيتم تحويلك إلى Google Play لتحميله.</p>
+        <p>⚠️ لن يعمل البث داخل أي متصفح أو مشغل آخر. هذا الإجراء نهائي ومضمون.</p>
+    </div>
+    <div class="footer">متوافق مع أجهزة Android فقط | يتطلب VLC Player</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- بيانات ثابتة ----------
+        const STREAM_URL = "https://stream.hls123.uk/live/ch3/index.m3u8";
+        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
+
+        // ---------- العناصر ----------
+        const btn = document.getElementById("launchVlcBtn");
+        const notAndroidMsg = document.getElementById("notAndroidMsg");
+        const sub = document.getElementById("platformSub");
+
+        // ---------- كشف نظام التشغيل ----------
+        const isAndroid = /Android/i.test(navigator.userAgent);
+
+        if (!isAndroid) {
+            // إخفاء الزر وإظهار رسالة التنبيه
+            btn.style.display = "none";
+            notAndroidMsg.style.display = "block";
+            sub.textContent = "غير متوافق مع جهازك";
+            return; // إيقاف باقي السكربت
+        }
+
+        // ---------- بناء Intent صحيح ----------
+        function buildVlcIntent() {
+            const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
+            const encodedFallback = encodeURIComponent(PLAY_STORE_URL);
+            return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodedFallback};end;`;
+        }
+
+        // ---------- الدالة الرئيسية (محسّنة) ----------
+        function openStreamInVlc() {
+            const intentUrl = buildVlcIntent();
+            let handled = false;
+
+            // محاولة فتح التطبيق
+            window.location.href = intentUrl;
+
+            // حدث blur: إذا نجح فتح VLC سيفقد المتصفح التركيز
+            const onBlur = () => {
+                if (!handled) {
+                    handled = true;
+                    clearTimeout(fallbackTimer);
+                    window.removeEventListener('blur', onBlur);
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                }
+            };
+
+            const onVisibilityChange = () => {
+                if (document.hidden) {
+                    onBlur();
+                }
+            };
+
+            // مؤقت احتياطي: إذا لم يحدث blur بعد 1.5 ثانية = التطبيق غير مثبت
+            const fallbackTimer = setTimeout(() => {
+                if (!handled) {
+                    handled = true;
+                    window.removeEventListener('blur', onBlur);
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                    window.location.href = PLAY_STORE_URL;
+                }
+            }, 1500);
+
+            window.addEventListener('blur', onBlur);
+            document.addEventListener('visibilitychange', onVisibilityChange);
+        }
+
+        // ربط الزر
+        btn.addEventListener('click', openStreamInVlc);
+
+        // ---------- إجراءات أمان بسيطة ----------
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+                (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
+                e.preventDefault();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
