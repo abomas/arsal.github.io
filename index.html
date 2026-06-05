@@ -118,13 +118,12 @@
 
         const btn = document.getElementById("launchVlcBtn");
 
-        // بناء intent:// صحيح لتطبيق VLC
+        // بناء الـ Intent الصحيح
         function buildVlcIntent() {
-            // نأخذ الجزء host/path من رابط البث
+            // إزالة https:// من الرابط ليبقى host/path
             const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
-            // ترميز رابط المتجر الاحتياطي
             const encodedFallback = encodeURIComponent(PLAY_STORE_URL);
-            // الصيغة النهائية المطلوبة من VLC
+            // intent://host/path#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=...;end;
             return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodedFallback};end;`;
         }
 
@@ -132,10 +131,10 @@
             const intentUrl = buildVlcIntent();
             let handled = false;
 
-            // محاولة فتح الـ intent مباشرة
+            // الانتقال إلى الـ intent مباشرة
             window.location.href = intentUrl;
 
-            // مؤقت احتياطي: إذا لم ينتقل إلى VLC خلال 1.2 ثانية، نذهب إلى Google Play
+            // مؤقت: إذا لم يحدث blur خلال 1.2 ثانية، فهذا يعني فشل الفتح (VLC غير مثبت)
             const fallbackTimer = setTimeout(() => {
                 if (!handled) {
                     handled = true;
@@ -143,7 +142,7 @@
                 }
             }, 1200);
 
-            // عند فقدان التركيز (أي نجح فتح VLC)، نلغي المؤقت
+            // عند فقدان التركيز (انتقلنا إلى VLC) نلغي المؤقت
             const onBlur = () => {
                 if (!handled) {
                     handled = true;
@@ -165,11 +164,8 @@
 
         btn.addEventListener('click', openStreamInVlc);
 
-        // إجراءات أمان بسيطة (منع النقر الأيمن وبعض الاختصارات)
-        btn.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            return false;
-        });
+        // حماية بسيطة: منع النقر الأيمن و F12
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
                 (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
