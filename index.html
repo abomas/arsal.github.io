@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLC Player – Exclusive Stream</title>
+    <title>مشغل VLC – البث الحصري</title>
     <style>
         * {
             margin: 0;
@@ -104,51 +104,51 @@
 </head>
 <body>
 <div class="container">
-    <!-- Card 1: Download VLC Player -->
+    <!-- المربع الأول: تنزيل VLC -->
     <div class="card">
         <div class="icon">
-            <!-- Simple VLC cone SVG -->
+            <!-- أيقونة VLC المخروطية -->
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M32 4L8 48H24L32 56L40 48H56L32 4Z" fill="#FF8800"/>
                 <rect x="14" y="44" width="36" height="6" rx="3" fill="#FF8800"/>
                 <rect x="26" y="28" width="12" height="10" rx="2" fill="white"/>
             </svg>
         </div>
-        <h2>Get VLC Player</h2>
-        <p>VLC is required to play the stream. Install it first.</p>
-        <!-- Button opens Play Store -->
+        <h2>تنزيل VLC Player</h2>
+        <p>المشغل مطلوب لتشغيل البث. ثبّته أولاً.</p>
+        <!-- الزر يفتح متجر التطبيقات -->
         <a id="downloadBtn" class="btn btn-download" href="#" target="_blank" rel="noopener">
-            <span>📥</span> Download
+            <span>📥</span> تنزيل
         </a>
     </div>
 
-    <!-- Card 2: Play the stream -->
+    <!-- المربع الثاني: تشغيل القناة -->
     <div class="card">
         <div class="icon">
-            <!-- Play triangle SVG -->
+            <!-- أيقونة مثلث التشغيل -->
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="32" cy="32" r="30" stroke="#FF8800" stroke-width="4" fill="none"/>
                 <polygon points="24,18 24,46 48,32" fill="#FF8800"/>
             </svg>
         </div>
-        <h2>Live Channel</h2>
-        <p>Tap to launch VLC and start watching.</p>
+        <h2>البث المباشر</h2>
+        <p>اضغط لتشغيل القناة عبر VLC.</p>
         <button id="playBtn" class="btn">
-            <span>▶</span> Play Stream
+            <span>▶</span> تشغيل البث
         </button>
     </div>
     <div class="secure-note">
-        Secure link – only works with VLC on Android
+        رابط آمن – يعمل حصراً مع VLC على أندرويد
     </div>
 </div>
 
 <script>
     (function() {
-        // Hidden stream & store URLs – do not touch
+        // الروابط المخفية – لا تقم بتعديلها
         const STREAM_URL = "https://raw.githubusercontent.com/abomas/iptv-files/refs/heads/main/chann1.m3u";
-        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=en";
+        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar";
         
-        // Set download button href
+        // ضبط رابط زر التحميل
         document.getElementById('downloadBtn').href = PLAY_STORE_URL;
         
         const playButton = document.getElementById("playBtn");
@@ -184,7 +184,7 @@
         
         playButton.addEventListener("click", openStream);
         
-        // Protection (no right-click, no dev tools)
+        // حماية (تعطيل النقر الأيمن وأدوات المطور)
         document.addEventListener("contextmenu", (e) => e.preventDefault());
         document.addEventListener("keydown", (e) => {
             if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I") || 
