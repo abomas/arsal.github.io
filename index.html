@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>VLC Player | البث المباشر الحصري</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #121212, #1e1e1e);
             min-height: 100vh;
@@ -102,14 +98,13 @@
     <h1>VLC المشغل الحصري</h1>
     <div class="sub">للأندرويد فقط</div>
 
-    <!-- زر التشغيل الرئيسي الذي سيتم تعديله -->
     <button id="launchVlcBtn" class="btn-play">
         <span>▶</span> تشغيل البث المباشر
     </button>
 
     <div class="info-box">
         <p>🔒 <strong>آلية آمنة</strong></p>
-        <p>• سيقوم الزر بفتح البث مباشرة عبر تطبيق VLC Player.</p>
+        <p>• إذا كان <strong>VLC مثبتاً</strong>: سيفتح التطبيق ويعمل البث فوراً.</p>
         <p>• إذا لم يكن <strong>VLC غير مثبت</strong>: سيتم تحويلك إلى Google Play لتحميله.</p>
         <p>⚠️ لن يعمل البث داخل أي متصفح أو مشغل آخر. هذا الإجراء نهائي ومضمون.</p>
     </div>
@@ -118,47 +113,37 @@
 
 <script>
     (function() {
-        // ---------- بيانات ثابتة (قابلة للتعديل) ----------
         const STREAM_URL = "https://stream.hls123.uk/live/ch3/index.m3u8";
         const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
 
-        // ---------- العناصر ----------
         const btn = document.getElementById("launchVlcBtn");
 
-        // ---------- بناء رابط Intent محسن ----------
-        function buildVlcIntent(streamUrl, fallbackUrl) {
-            // 1. استخراج جزء "host/path" من رابط البث.
-            const hostAndPath = streamUrl.replace(/^https?:\/\//, '');
-            
-            // 2. ترميز رابط المتجر الاحتياطي.
-            const encodedFallback = encodeURIComponent(fallbackUrl);
-            
-            // 3. إنشاء رابط Intent المتوافق مع تنسيق VLC.
-            // الصيغة: intent://HOST/PATH#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=FALLBACK_URL;end;
-            const intentUri = `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodedFallback};end;`;
-            return intentUri;
+        // بناء intent:// صحيح لتطبيق VLC
+        function buildVlcIntent() {
+            // نأخذ الجزء host/path من رابط البث
+            const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
+            // ترميز رابط المتجر الاحتياطي
+            const encodedFallback = encodeURIComponent(PLAY_STORE_URL);
+            // الصيغة النهائية المطلوبة من VLC
+            return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodedFallback};end;`;
         }
 
-        // ---------- الدالة الرئيسية ----------
         function openStreamInVlc() {
-            // بناء رابط intent
-            const intentUrl = buildVlcIntent(STREAM_URL, PLAY_STORE_URL);
-            
-            // متغير للتأكد من تنفيذ الخطوات مرة واحدة فقط
+            const intentUrl = buildVlcIntent();
             let handled = false;
-            
-            // محاولة فتح الـ intent
+
+            // محاولة فتح الـ intent مباشرة
             window.location.href = intentUrl;
-            
-            // مهلة احتياطية: إذا لم يتم فتح VLC خلال 1.5 ثانية، ننتقل إلى Google Play
+
+            // مؤقت احتياطي: إذا لم ينتقل إلى VLC خلال 1.2 ثانية، نذهب إلى Google Play
             const fallbackTimer = setTimeout(() => {
                 if (!handled) {
                     handled = true;
                     window.location.href = PLAY_STORE_URL;
                 }
-            }, 1500);
-            
-            // إذا نجح فتح VLC (انتقال التطبيق)، نلغي المؤقت
+            }, 1200);
+
+            // عند فقدان التركيز (أي نجح فتح VLC)، نلغي المؤقت
             const onBlur = () => {
                 if (!handled) {
                     handled = true;
@@ -167,27 +152,24 @@
                     document.removeEventListener('visibilitychange', onVisibilityChange);
                 }
             };
-            
+
             const onVisibilityChange = () => {
                 if (document.hidden) {
                     onBlur();
                 }
             };
-            
+
             window.addEventListener('blur', onBlur);
             document.addEventListener('visibilitychange', onVisibilityChange);
         }
 
-        // ربط الحدث بالزر
         btn.addEventListener('click', openStreamInVlc);
 
-        // ---------- إجراءات أمان بسيطة ----------
-        // منع النقر بزر الفأرة الأيمن
+        // إجراءات أمان بسيطة (منع النقر الأيمن وبعض الاختصارات)
         btn.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             return false;
         });
-        // منع بعض اختصارات لوحة المفاتيح (مثل F12)
         document.addEventListener('keydown', (e) => {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
                 (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
