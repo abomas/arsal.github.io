@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>VLC Player | البث المباشر الحصري</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             background: linear-gradient(145deg, #121212, #1e1e1e);
             min-height: 100vh;
@@ -98,13 +102,14 @@
     <h1>VLC المشغل الحصري</h1>
     <div class="sub">للأندرويد فقط</div>
 
+    <!-- زر التشغيل الرئيسي الذي سيتم تعديله -->
     <button id="launchVlcBtn" class="btn-play">
         <span>▶</span> تشغيل البث المباشر
     </button>
 
     <div class="info-box">
         <p>🔒 <strong>آلية آمنة</strong></p>
-        <p>• إذا كان <strong>VLC مثبتاً</strong>: سيفتح التطبيق ويعمل البث فوراً.</p>
+        <p>• سيقوم الزر بفتح البث مباشرة عبر تطبيق VLC Player.</p>
         <p>• إذا لم يكن <strong>VLC غير مثبت</strong>: سيتم تحويلك إلى Google Play لتحميله.</p>
         <p>⚠️ لن يعمل البث داخل أي متصفح أو مشغل آخر. هذا الإجراء نهائي ومضمون.</p>
     </div>
@@ -120,66 +125,64 @@
         // ---------- العناصر ----------
         const btn = document.getElementById("launchVlcBtn");
 
+        // ---------- بناء رابط Intent محسن ----------
+        function buildVlcIntent(streamUrl, fallbackUrl) {
+            // 1. استخراج جزء "host/path" من رابط البث.
+            const hostAndPath = streamUrl.replace(/^https?:\/\//, '');
+            
+            // 2. ترميز رابط المتجر الاحتياطي.
+            const encodedFallback = encodeURIComponent(fallbackUrl);
+            
+            // 3. إنشاء رابط Intent المتوافق مع تنسيق VLC.
+            // الصيغة: intent://HOST/PATH#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=FALLBACK_URL;end;
+            const intentUri = `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodedFallback};end;`;
+            return intentUri;
+        }
+
         // ---------- الدالة الرئيسية ----------
         function openStreamInVlc() {
-            // 1. استخدام البروتوكول المخصص vlc://
-            // هذا البروتوكول لا يمكن لأي متصفح تشغيله، مما يمنع تشغيل البث في المتصفح.
-            const vlcProtocolUrl = `vlc://${STREAM_URL}`;
-
+            // بناء رابط intent
+            const intentUrl = buildVlcIntent(STREAM_URL, PLAY_STORE_URL);
+            
             // متغير للتأكد من تنفيذ الخطوات مرة واحدة فقط
             let handled = false;
-
-            // 2. استخدام iframe مخفي لمحاولة فتح البروتوكول (أكثر فعالية من window.location.href في بعض المتصفحات)
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            // 3. حدث blur: هذا هو مؤشر النجاح!
-            // إذا تم فتح VLC، فإن المتصفح يفقد التركيز (blur) لأن التطبيق سيتم فتحه
+            
+            // محاولة فتح الـ intent
+            window.location.href = intentUrl;
+            
+            // مهلة احتياطية: إذا لم يتم فتح VLC خلال 1.5 ثانية، ننتقل إلى Google Play
+            const fallbackTimer = setTimeout(() => {
+                if (!handled) {
+                    handled = true;
+                    window.location.href = PLAY_STORE_URL;
+                }
+            }, 1500);
+            
+            // إذا نجح فتح VLC (انتقال التطبيق)، نلغي المؤقت
             const onBlur = () => {
                 if (!handled) {
                     handled = true;
                     clearTimeout(fallbackTimer);
-                    document.removeEventListener('visibilitychange', onVisibilityChange);
                     window.removeEventListener('blur', onBlur);
-                    // إزالة الـ iframe بعد النجاح
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                    // النجاح: لا نقوم بأي شيء لأن VLC تم فتحه بنجاح
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
                 }
             };
-
-            // 4. حدث visibilitychange: احتياطي لبعض المتصفحات
+            
             const onVisibilityChange = () => {
                 if (document.hidden) {
                     onBlur();
                 }
             };
-
-            // 5. مؤقت زمني (Timeout): هذا هو مؤشر الفشل!
-            // إذا مرت 1.5 ثانية ولم يحدث blur، فهذا يعني أن VLC غير مثبت، فنقوم بالتحويل إلى المتجر
-            const fallbackTimer = setTimeout(() => {
-                if (!handled) {
-                    handled = true;
-                    document.removeEventListener('visibilitychange', onVisibilityChange);
-                    window.removeEventListener('blur', onBlur);
-                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
-                    // الفشل: توجيه المستخدم إلى Google Play
-                    window.location.href = PLAY_STORE_URL;
-                }
-            }, 1500); // المهلة 1.5 ثانية كافية
-
-            // 6. تسجيل الأحداث
+            
             window.addEventListener('blur', onBlur);
             document.addEventListener('visibilitychange', onVisibilityChange);
-            // محاولة فتح البروتوكول
-            iframe.src = vlcProtocolUrl;
         }
 
         // ربط الحدث بالزر
         btn.addEventListener('click', openStreamInVlc);
 
         // ---------- إجراءات أمان بسيطة ----------
-        // منع النقر بزر الفأرة الأيمن (على الزر تحديداً) لحماية أبسط
+        // منع النقر بزر الفأرة الأيمن
         btn.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             return false;
