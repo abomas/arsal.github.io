@@ -3,44 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLC Player - البث الحصري</title>
+    <title>VLC Player | البث المباشر الحصري</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: #0a0a0a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(145deg, #121212, #1e1e1e);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
-        .container {
-            max-width: 520px;
+        .player-card {
+            max-width: 550px;
             width: 100%;
-            background: #1a1a1a;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(2px);
             border-radius: 48px;
-            padding: 40px 30px;
+            padding: 40px 28px;
             text-align: center;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.6);
-            border: 1px solid #333;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,136,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
         }
         h1 {
             font-size: 32px;
+            font-weight: 800;
             background: linear-gradient(135deg, #ffaa33, #ff6600);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .sub {
             color: #aaa;
             font-size: 14px;
             margin-bottom: 30px;
+            border-bottom: 1px dashed #333;
+            display: inline-block;
+            padding-bottom: 6px;
         }
         .btn-play {
             background: #ff8800;
@@ -57,96 +58,136 @@
             gap: 12px;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 8px 20px rgba(255,136,0,0.4);
-            margin: 25px 0 20px;
+            box-shadow: 0 8px 25px rgba(255,136,0,0.4);
+            margin: 20px 0 25px;
         }
         .btn-play:active {
             transform: scale(0.97);
             background: #e07a00;
         }
-        .info {
+        .info-box {
             background: #252525;
             border-radius: 24px;
-            padding: 18px;
+            padding: 20px;
             text-align: right;
             border-right: 4px solid #ff8800;
         }
-        .info p {
+        .info-box p {
             color: #ccc;
             font-size: 14px;
             margin: 8px 0;
+            line-height: 1.5;
         }
         .footer {
             font-size: 11px;
             color: #555;
             margin-top: 30px;
+            text-align: center;
+        }
+        @media (max-width: 500px) {
+            .player-card { padding: 25px 20px; }
+            .btn-play { font-size: 20px; padding: 15px; }
+            h1 { font-size: 26px; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🎬 VLC Player</h1>
-    <div class="sub">المشغل الوحيد المدعوم</div>
-    <button id="playBtn" class="btn-play">
-        <span>▶</span> تشغيل البث مباشرة
+
+<div class="player-card">
+    <div class="icon-large">📺</div>
+    <h1>VLC المشغل الحصري</h1>
+    <div class="sub">للأندرويد فقط</div>
+
+    <button id="launchVlcBtn" class="btn-play">
+        <span>▶</span> تشغيل البث المباشر
     </button>
-    <div class="info">
-        <p>🔒 <strong>آلية آمنة:</strong> الرابط مشفر ولا يمكن تشغيله في أي متصفح.</p>
-        <p>📱 إذا كان <strong>VLC غير مثبت</strong>، سيتم توجيهك إلى Google Play لتحميله.</p>
-        <p>⚠️ لن يعمل البث داخل المتصفح أبداً.</p>
+
+    <div class="info-box">
+        <p>🔒 <strong>آلية آمنة</strong></p>
+        <p>• إذا كان <strong>VLC مثبتاً</strong>: سيفتح التطبيق ويعمل البث فوراً.</p>
+        <p>• إذا لم يكن <strong>VLC غير مثبت</strong>: سيتم تحويلك إلى Google Play لتحميله.</p>
+        <p>⚠️ لن يعمل البث داخل أي متصفح أو مشغل آخر. هذا الإجراء نهائي ومضمون.</p>
     </div>
-    <div class="footer">Android فقط | يتطلب VLC Player</div>
+    <div class="footer">متوافق مع أجهزة Android فقط | يتطلب VLC Player</div>
 </div>
 
 <script>
     (function() {
-        // الرابط السري - لا يظهر في HTML
+        // ---------- بيانات ثابتة (قابلة للتعديل) ----------
         const STREAM_URL = "https://stream.hls123.uk/live/ch3/index.m3u8";
-        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar";
-        
-        const playButton = document.getElementById("playBtn");
-        
-        // بناء intent:// قوي
-        function buildIntent() {
-            // نقوم بإزالة https:// من البث لتحويله إلى مسار نسبي في الـ intent
-            const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
-            // نضبط الـ fallback URL بشكل واضح
-            const fallback = encodeURIComponent(PLAY_STORE_URL);
-            // intent://stream.hls123.uk/live/ch3/index.m3u8#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=...;end;
-            return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${fallback};end;`;
+        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc";
+
+        // ---------- العناصر ----------
+        const btn = document.getElementById("launchVlcBtn");
+
+        // ---------- الدالة الرئيسية ----------
+        function openStreamInVlc() {
+            // 1. استخدام البروتوكول المخصص vlc://
+            // هذا البروتوكول لا يمكن لأي متصفح تشغيله، مما يمنع تشغيل البث في المتصفح.
+            const vlcProtocolUrl = `vlc://${STREAM_URL}`;
+
+            // متغير للتأكد من تنفيذ الخطوات مرة واحدة فقط
+            let handled = false;
+
+            // 2. استخدام iframe مخفي لمحاولة فتح البروتوكول (أكثر فعالية من window.location.href في بعض المتصفحات)
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+
+            // 3. حدث blur: هذا هو مؤشر النجاح!
+            // إذا تم فتح VLC، فإن المتصفح يفقد التركيز (blur) لأن التطبيق سيتم فتحه
+            const onBlur = () => {
+                if (!handled) {
+                    handled = true;
+                    clearTimeout(fallbackTimer);
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                    window.removeEventListener('blur', onBlur);
+                    // إزالة الـ iframe بعد النجاح
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                    // النجاح: لا نقوم بأي شيء لأن VLC تم فتحه بنجاح
+                }
+            };
+
+            // 4. حدث visibilitychange: احتياطي لبعض المتصفحات
+            const onVisibilityChange = () => {
+                if (document.hidden) {
+                    onBlur();
+                }
+            };
+
+            // 5. مؤقت زمني (Timeout): هذا هو مؤشر الفشل!
+            // إذا مرت 1.5 ثانية ولم يحدث blur، فهذا يعني أن VLC غير مثبت، فنقوم بالتحويل إلى المتجر
+            const fallbackTimer = setTimeout(() => {
+                if (!handled) {
+                    handled = true;
+                    document.removeEventListener('visibilitychange', onVisibilityChange);
+                    window.removeEventListener('blur', onBlur);
+                    if (document.body.contains(iframe)) document.body.removeChild(iframe);
+                    // الفشل: توجيه المستخدم إلى Google Play
+                    window.location.href = PLAY_STORE_URL;
+                }
+            }, 1500); // المهلة 1.5 ثانية كافية
+
+            // 6. تسجيل الأحداث
+            window.addEventListener('blur', onBlur);
+            document.addEventListener('visibilitychange', onVisibilityChange);
+            // محاولة فتح البروتوكول
+            iframe.src = vlcProtocolUrl;
         }
-        
-        function openStream() {
-            const intentUrl = buildIntent();
-            
-            // الطريقة الأولى: محاولة فتح الـ intent مباشرة
-            window.location.href = intentUrl;
-            
-            // مهلة احتياطية: إذا لم ينتقل المستخدم إلى VLC خلال 1.2 ثانية، نعتبر أن VLC غير مثبت
-            // ونوجهه إلى Google Play يدوياً (بسبب ضعف دعم بعض المتصفحات للـ fallback)
-            let fallbackTimer = setTimeout(function() {
-                window.location.href = PLAY_STORE_URL;
-            }, 1200);
-            
-            // إذا نجح الـ intent وانتقل إلى التطبيق، سيتم إلغاء المؤقت
-            window.addEventListener("blur", function onBlur() {
-                clearTimeout(fallbackTimer);
-                window.removeEventListener("blur", onBlur);
-            });
-            
-            // أيضاً إذا تم فتح الـ intent في علامة تبويب أخرى (نادر)
-            window.addEventListener("pagehide", function() {
-                clearTimeout(fallbackTimer);
-            });
-        }
-        
-        playButton.addEventListener("click", openStream);
-        
-        // منع النقر بزر الفأرة الأيمن واختصارات حفظ الصفحة
-        document.addEventListener("contextmenu", (e) => e.preventDefault());
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I") || 
-                (e.ctrlKey && (e.key === "u" || e.key === "U"))) {
+
+        // ربط الحدث بالزر
+        btn.addEventListener('click', openStreamInVlc);
+
+        // ---------- إجراءات أمان بسيطة ----------
+        // منع النقر بزر الفأرة الأيمن (على الزر تحديداً) لحماية أبسط
+        btn.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        // منع بعض اختصارات لوحة المفاتيح (مثل F12)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+                (e.ctrlKey && (e.key === 'u' || e.key === 'U'))) {
                 e.preventDefault();
             }
         });
