@@ -106,43 +106,44 @@
         
         const playButton = document.getElementById("playBtn");
         
-        // بناء intent:// قوي
         function buildIntent() {
-            // نقوم بإزالة https:// من البث لتحويله إلى مسار نسبي في الـ intent
+            // نزيل https:// من رابط البث ليكون مسار intent صحيح
             const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
-            // نضبط الـ fallback URL بشكل واضح
             const fallback = encodeURIComponent(PLAY_STORE_URL);
-            // intent://stream.hls123.uk/live/ch3/index.m3u8#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=...;end;
             return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${fallback};end;`;
         }
         
         function openStream() {
             const intentUrl = buildIntent();
             
-            // الطريقة الأولى: محاولة فتح الـ intent مباشرة
-            window.location.href = intentUrl;
+            // استخدم iframe مخفي بدلاً من تغيير عنوان الصفحة
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = intentUrl;
+            document.body.appendChild(iframe);
             
-            // مهلة احتياطية: إذا لم ينتقل المستخدم إلى VLC خلال 1.2 ثانية، نعتبر أن VLC غير مثبت
-            // ونوجهه إلى Google Play يدوياً (بسبب ضعف دعم بعض المتصفحات للـ fallback)
-            let fallbackTimer = setTimeout(function() {
+            // مؤقت احتياطي: إذا لم يتم فتح التطبيق خلال 1.5 ثانية نرسل المتجر
+            const fallbackTimer = setTimeout(function() {
                 window.location.href = PLAY_STORE_URL;
-            }, 1200);
+            }, 1500);
             
-            // إذا نجح الـ intent وانتقل إلى التطبيق، سيتم إلغاء المؤقت
-            window.addEventListener("blur", function onBlur() {
+            // إذا فُتح التطبيق وغادرت الصفحة التركيز، نلغي المؤقت
+            window.addEventListener("blur", function cancelTimer() {
                 clearTimeout(fallbackTimer);
-                window.removeEventListener("blur", onBlur);
+                window.removeEventListener("blur", cancelTimer);
             });
             
-            // أيضاً إذا تم فتح الـ intent في علامة تبويب أخرى (نادر)
-            window.addEventListener("pagehide", function() {
-                clearTimeout(fallbackTimer);
-            });
+            // تنظيف: نزيل الـ iframe بعد فترة قصيرة
+            setTimeout(function() {
+                if (iframe.parentNode) {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            }, 2000);
         }
         
         playButton.addEventListener("click", openStream);
         
-        // منع النقر بزر الفأرة الأيمن واختصارات حفظ الصفحة
+        // منع النقر بزر الفأرة الأيمن واختصارات التصفح
         document.addEventListener("contextmenu", (e) => e.preventDefault());
         document.addEventListener("keydown", (e) => {
             if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I") || 
