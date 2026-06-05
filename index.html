@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLC Player | تشغيل البث الحصري</title>
+    <title>مشغل VLC الحصري</title>
     <style>
         * {
             margin: 0;
@@ -11,262 +11,217 @@
             box-sizing: border-box;
         }
         body {
-            background: linear-gradient(145deg, #121212 0%, #1e1e1e 100%);
-            min-height: 100vh;
+            background: #0a0a0a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', 'Tahoma', 'Roboto', sans-serif;
-            padding: 16px;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .card {
+        .container {
             max-width: 550px;
             width: 100%;
-            background: rgba(30, 30, 30, 0.95);
-            backdrop-filter: blur(2px);
-            border-radius: 40px;
-            padding: 30px 24px 40px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,136,0,0.2);
+            background: #1a1a1a;
+            border-radius: 48px;
+            padding: 30px 24px;
             text-align: center;
-            transition: all 0.2s;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            border: 1px solid #333;
         }
         h1 {
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 32px;
             background: linear-gradient(135deg, #ffaa33, #ff6600);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
+            margin-bottom: 10px;
         }
         .sub {
             color: #aaa;
+            margin-bottom: 30px;
             font-size: 14px;
-            margin-bottom: 32px;
-            border-bottom: 1px dashed #333;
-            display: inline-block;
-            padding-bottom: 6px;
         }
-        .step {
-            background: #2a2a2a;
-            border-radius: 24px;
-            padding: 18px;
-            margin-bottom: 24px;
-            text-align: right;
-            transition: 0.2s;
+        .step-card {
+            background: #242424;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 25px;
         }
         .step-title {
             color: #ff8800;
             font-weight: bold;
             font-size: 18px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
             justify-content: center;
+            gap: 10px;
         }
-        .step-title span {
+        .step-number {
             background: #ff8800;
-            color: #1e1e1e;
-            width: 28px;
-            height: 28px;
+            color: #1a1a1a;
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 30px;
             font-weight: bold;
-            font-size: 16px;
         }
         .btn-vlc {
             width: 100%;
             background: #ff8800;
             border: none;
             border-radius: 60px;
-            padding: 16px 12px;
+            padding: 16px;
             color: white;
             font-size: 22px;
             font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 8px 20px rgba(255,136,0,0.35);
-            margin-bottom: 12px;
+            box-shadow: 0 6px 14px rgba(255,136,0,0.3);
         }
         .btn-vlc:active {
             transform: scale(0.97);
-            background: #e07a00;
+            background: #e07000;
         }
         .google-btn {
-            background: #3c3c3c;
-            color: #eee;
-            font-size: 16px;
+            background: #2c2c2c;
             box-shadow: none;
-            padding: 12px;
+            font-size: 16px;
         }
-        .google-btn:hover {
-            background: #505050;
+        .google-btn img {
+            width: 24px;
+            filter: brightness(0) invert(1);
         }
-        .warning-note {
-            background: #2a2000;
+        .warning {
+            background: #2a1e00;
             border-right: 4px solid #ffaa33;
             padding: 12px;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 13px;
             color: #ffcc88;
-            margin: 20px 0 12px;
-            text-align: center;
+            margin: 15px 0;
         }
-        .iframe-container {
+        .video-wrap {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
+            border-radius: 24px;
             overflow: hidden;
-            border-radius: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 12px black;
+            margin-top: 15px;
         }
-        .iframe-container iframe {
+        .video-wrap iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border: 0;
         }
         footer {
             font-size: 11px;
             color: #555;
-            margin-top: 28px;
-        }
-        hr {
-            border-color: #333;
-            margin: 16px 0;
+            margin-top: 25px;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <h1>📺 VLC Player</h1>
-    <div class="sub">تشغيل حصري عبر VLC فقط</div>
+    <div class="sub">للأندرويد فقط – تشغيل حصري عبر VLC</div>
 
-    <!-- الخطوة 1: تثبيت VLC -->
-    <div class="step">
+    <div class="step-card">
         <div class="step-title">
-            <span>1</span> تثبيت مشغل VLC
+            <span class="step-number">1</span> تثبيت VLC
         </div>
-        <a href="https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar"
-           target="_blank" rel="noopener noreferrer"
-           style="text-decoration: none;">
-            <button class="btn-vlc google-btn" style="background:#2c2c2c;">
-                <img src="https://www.gstatic.com/android/market_images/web/play_prism_h2_2020.png"
-                     style="width:28px; height:28px; filter:brightness(0) invert(1);" alt="google play">
-                تحميل من Google Play
+        <a href="https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+            <button class="btn-vlc google-btn">
+                <img src="https://www.gstatic.com/android/market_images/web/play_prism_h2_2020.png" alt="play"> تحميل من Google Play
             </button>
         </a>
-        <p style="color:#aaa; font-size:13px; margin-top:10px;">
-            ✅ مجاني وآمن – مشغل وسائط متعدد الصيغ
-        </p>
+        <p style="color:#aaa; font-size:12px; margin-top:10px;">مشغل مجاني – يدعم جميع الصيغ بما فيها m3u8</p>
     </div>
 
-    <!-- الخطوة 2: التشغيل في VLC (الزر الذكي) -->
-    <div class="step">
+    <div class="step-card">
         <div class="step-title">
-            <span>2</span> تشغيل البث المباشر
+            <span class="step-number">2</span> تشغيل البث المباشر
         </div>
-        <button id="playInVlcBtn" class="btn-vlc">
-            ▶ تشغيل في VLC
+        <button id="playBtn" class="btn-vlc">
+            ▶ تشغيل عبر VLC
         </button>
-        <p style="color:#bbb; font-size:13px; margin-top:12px;">
-            ✨ سيفتح التطبيق تلقائياً ويبدأ البث.<br>
-            <span style="color:#ffaa66;">⚠️ لن يعمل الرابط في أي متصفح – مخصص لـ VLC فقط.</span>
+        <p style="color:#bbb; font-size:13px; margin-top:14px;">
+            🔐 الرابط مشفر ولا يعمل في أي متصفح – فقط من خلال هذا الزر.
         </p>
     </div>
 
-    <!-- الخطوة 3: فيديو تعليمي -->
-    <div class="step" style="margin-bottom: 0;">
+    <div class="step-card">
         <div class="step-title">
-            <span>3</span> شرح طريقة التشغيل
+            <span class="step-number">3</span> فيديو توضيحي
         </div>
-        <div class="iframe-container">
-            <iframe src="https://www.youtube.com/embed/kHXdKb_pIXg"
-                    title="YouTube tutorial"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-            </iframe>
+        <div class="video-wrap">
+            <iframe src="https://www.youtube.com/embed/kHXdKb_pIXg" frameborder="0" allowfullscreen></iframe>
         </div>
-        <p style="color:#aaa; font-size:13px; margin-top:12px;">
-            شروحات: فتح Network Stream في VLC للأندرويد
-        </p>
+        <p style="color:#aaa; font-size:12px; margin-top:10px;">كيفية فتح شبكة البث في VLC للأندرويد</p>
     </div>
 
-    <div class="warning-note">
-        🔒 رابط البث مشفر ومحمي – لا يمكن تشغيله إلا من خلال زر "تشغيل في VLC" أعلاه.
+    <div class="warning">
+        ⚠️ ملاحظة: إذا لم يكن VLC مثبتاً، سيتم تحويلك تلقائياً إلى متجر Google Play. لن يتم فتح البث في المتصفح أبداً.
     </div>
-    <footer>
-        ⚡ يعمل على Android فقط | البث لا يعمل داخل المتصفحات
-    </footer>
+    <footer>Android only | VLC is required</footer>
 </div>
 
 <script>
     (function() {
-        // الرابط السري (مخفي عن المستخدم العادي)
+        // رابط البث السري
         const STREAM_URL = "https://stream.hls123.uk/live/ch3/index.m3u8";
 
-        // زر التشغيل
-        const playBtn = document.getElementById("playInVlcBtn");
+        const playButton = document.getElementById("playBtn");
 
-        // دالة لتشغيل البث عبر VLC باستخدام Intent مع fallback إلى Google Play
+        // الوظيفة الأساسية: محاولة فتح VLC عبر بروتوكول vlc://
+        // وإذا فشلت (أي أن VLC غير موجود) ننتقل إلى Google Play
         function openStreamInVlc() {
-            // الطريقة الأولى: Intent URI متقدم (يدعم معظم إصدارات Android + متصفح Chrome)
-            // الصيغة: intent://HOST/PATH#Intent;action=VIEW;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=FALLBACK;end;
-            // نريد فتح https://stream.hls123.uk/live/ch3/index.m3u8
-            const hostPath = STREAM_URL.replace(/^https?:\/\//, ''); // stream.hls123.uk/live/ch3/index.m3u8
-
-            const fallbackUrl = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar";
-
-            // بناء Intent URI وفق المواصفات
-            const intentUri = `intent://${hostPath}#Intent;action=android.intent.action.VIEW;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end`;
-
-            // محاولة فتح الـ Intent
-            window.location.href = intentUri;
-
-            // احتياطي صغير: بعض المتصفحات القديمة لا تدعم intent:// بشكل كامل،
-            // نضيف timeout لتجربة طريقة بديلة (vlc://) إذا لم يعمل intent خلال 0.5 ثانية (نادر)
-            let fallbackTimer = setTimeout(function() {
-                // بعد 800 مللي ثانية، إذا ما زلنا في نفس الصفحة نحاول بطريقة vlc:// المباشرة
-                // لكن بدون fallback إضافي لأن intent قد فشل تماماً
-                try {
-                    const vlcDirect = `vlc://${STREAM_URL}`;
-                    window.location.href = vlcDirect;
-                } catch(e) {}
-            }, 800);
-
-            // إذا انتقلنا إلى تطبيق VLC، فإن الصفحة ستفقد التركيز ولن ينفذ timer
-            // لكن يمكننا إلغاء الـ timer بعد فترة قصيرة (لن يؤثر على التجربة)
-            window.addEventListener('blur', function onBlur() {
+            // 1. نستخدم الرابط بصيغة vlc:// (بروتوكول معروف لدى VLC)
+            const vlcUrl = `vlc://${STREAM_URL}`;
+            
+            // 2. محاولة فتح البروتوكول
+            window.location.href = vlcUrl;
+            
+            // 3. نضبط مهلة زمنية: إذا بقيت الصفحة بعد 1.2 ثانية فهذا يعني فشل الفتح
+            // لأن النظام لم يجد تطبيقاً قادراً على معالجة vlc://
+            const fallbackTimer = setTimeout(function() {
+                // ننقل المستخدم إلى Google Play لتحميل VLC
+                window.location.href = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar";
+            }, 1200);
+            
+            // 4. إذا انتقلت الصفحة إلى تطبيق VLC، فإن حدث blur سيحصل أو ستنقطع المهلة
+            // نلغي المهلة عند فقدان التركيز (انتقال ناجح)
+            window.addEventListener("blur", function onBlur() {
                 clearTimeout(fallbackTimer);
-                window.removeEventListener('blur', onBlur);
+                window.removeEventListener("blur", onBlur);
+            });
+            
+            // 5. أيضاً في حالة أن الصفحة لم تغادر ولكن المستخدم عاد للتطبيق (نادر) نلغي المهلة
+            window.addEventListener("focus", function onFocus() {
+                clearTimeout(fallbackTimer);
+                window.removeEventListener("focus", onFocus);
             });
         }
 
-        // ربط الزر بالحدث
-        playBtn.addEventListener("click", openStreamInVlc);
+        // ربط الزر
+        playButton.addEventListener("click", openStreamInVlc);
 
-        // منع أي محاولة لفتح الرابط بالضغط المطول أو نسخ الرابط بسهولة
-        // (حماية بسيطة: المستخدم لا يرى الرابط مباشرة)
-        document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('contextmenu', (e) => {
-                if (el.id === 'playInVlcBtn') {
-                    e.preventDefault();
-                    return false;
-                }
-            });
+        // حماية إضافية: منع أي محاولة لفتح الرابط من خلال أدوات المطور أو النقر بزر الفأرة الأيمن
+        document.addEventListener("contextmenu", function(e) {
+            if (e.target.closest("#playBtn")) {
+                e.preventDefault();
+                return false;
+            }
         });
     })();
 </script>
