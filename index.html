@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>VLC Player - البث الحصري</title>
+    <title>VLC Player – Exclusive Stream</title>
     <style>
         * {
             margin: 0;
@@ -22,92 +22,138 @@
         .container {
             max-width: 520px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+        .card {
+            width: 260px;
+            aspect-ratio: 1 / 1;
             background: #1a1a1a;
-            border-radius: 48px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.6);
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            box-shadow: 0 20px 32px rgba(0,0,0,0.6);
             border: 1px solid #333;
+            padding: 20px;
+            transition: transform 0.2s;
         }
-        h1 {
-            font-size: 32px;
-            background: linear-gradient(135deg, #ffaa33, #ff6600);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
+        .card:active {
+            transform: scale(0.98);
         }
-        .sub {
+        .icon {
+            width: 64px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+        }
+        .card p {
             color: #aaa;
-            font-size: 14px;
-            margin-bottom: 30px;
+            font-size: 13px;
+            text-align: center;
+            margin: 0;
         }
-        .btn-play {
-            background: #ff8800;
+        .btn {
             border: none;
             border-radius: 60px;
-            padding: 18px 20px;
-            width: 100%;
-            font-size: 24px;
+            padding: 14px 24px;
+            font-size: 16px;
             font-weight: bold;
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 8px;
             cursor: pointer;
             transition: 0.2s;
+            text-decoration: none;
+            background: #ff8800;
             box-shadow: 0 8px 20px rgba(255,136,0,0.4);
-            margin: 25px 0 20px;
+            width: 100%;
         }
-        .btn-play:active {
-            transform: scale(0.97);
+        .btn:active {
             background: #e07a00;
+            transform: scale(0.97);
         }
-        .info {
-            background: #252525;
-            border-radius: 24px;
-            padding: 18px;
-            text-align: right;
-            border-right: 4px solid #ff8800;
+        .btn-download {
+            background: #2196F3;
+            box-shadow: 0 8px 20px rgba(33,150,243,0.4);
         }
-        .info p {
-            color: #ccc;
-            font-size: 14px;
-            margin: 8px 0;
+        .btn-download:active {
+            background: #1976D2;
         }
-        .footer {
+        .secure-note {
+            color: #888;
             font-size: 11px;
-            color: #555;
-            margin-top: 30px;
+            text-align: center;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🎬 VLC Player</h1>
-    <div class="sub">المشغل الوحيد المدعوم</div>
-    <button id="playBtn" class="btn-play">
-        <span>▶</span> تشغيل البث مباشرة
-    </button>
-    <div class="info">
-        <p>🔒 <strong>آلية آمنة:</strong> الرابط مشفر ولا يمكن تشغيله في أي متصفح.</p>
-        <p>📱 إذا كان <strong>VLC غير مثبت</strong>، سيتم توجيهك إلى Google Play لتحميله.</p>
-        <p>⚠️ لن يعمل البث داخل المتصفح أبداً.</p>
+    <!-- Card 1: Download VLC Player -->
+    <div class="card">
+        <div class="icon">
+            <!-- Simple VLC cone SVG -->
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 4L8 48H24L32 56L40 48H56L32 4Z" fill="#FF8800"/>
+                <rect x="14" y="44" width="36" height="6" rx="3" fill="#FF8800"/>
+                <rect x="26" y="28" width="12" height="10" rx="2" fill="white"/>
+            </svg>
+        </div>
+        <h2>Get VLC Player</h2>
+        <p>VLC is required to play the stream. Install it first.</p>
+        <!-- Button opens Play Store -->
+        <a id="downloadBtn" class="btn btn-download" href="#" target="_blank" rel="noopener">
+            <span>📥</span> Download
+        </a>
     </div>
-    <div class="footer">Android فقط | يتطلب VLC Player</div>
+
+    <!-- Card 2: Play the stream -->
+    <div class="card">
+        <div class="icon">
+            <!-- Play triangle SVG -->
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="30" stroke="#FF8800" stroke-width="4" fill="none"/>
+                <polygon points="24,18 24,46 48,32" fill="#FF8800"/>
+            </svg>
+        </div>
+        <h2>Live Channel</h2>
+        <p>Tap to launch VLC and start watching.</p>
+        <button id="playBtn" class="btn">
+            <span>▶</span> Play Stream
+        </button>
+    </div>
+    <div class="secure-note">
+        Secure link – only works with VLC on Android
+    </div>
 </div>
 
 <script>
     (function() {
-        // الرابط السري - لا يظهر في HTML
+        // Hidden stream & store URLs – do not touch
         const STREAM_URL = "https://raw.githubusercontent.com/abomas/iptv-files/refs/heads/main/chann1.m3u";
-        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=ar";
+        const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=en";
+        
+        // Set download button href
+        document.getElementById('downloadBtn').href = PLAY_STORE_URL;
         
         const playButton = document.getElementById("playBtn");
         
         function buildIntent() {
-            // نزيل https:// من رابط البث ليكون مسار intent صحيح
             const hostAndPath = STREAM_URL.replace(/^https?:\/\//, '');
             const fallback = encodeURIComponent(PLAY_STORE_URL);
             return `intent://${hostAndPath}#Intent;scheme=https;package=org.videolan.vlc;S.browser_fallback_url=${fallback};end;`;
@@ -115,25 +161,20 @@
         
         function openStream() {
             const intentUrl = buildIntent();
-            
-            // استخدم iframe مخفي بدلاً من تغيير عنوان الصفحة
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = intentUrl;
             document.body.appendChild(iframe);
             
-            // مؤقت احتياطي: إذا لم يتم فتح التطبيق خلال 1.5 ثانية نرسل المتجر
             const fallbackTimer = setTimeout(function() {
                 window.location.href = PLAY_STORE_URL;
             }, 1500);
             
-            // إذا فُتح التطبيق وغادرت الصفحة التركيز، نلغي المؤقت
             window.addEventListener("blur", function cancelTimer() {
                 clearTimeout(fallbackTimer);
                 window.removeEventListener("blur", cancelTimer);
             });
             
-            // تنظيف: نزيل الـ iframe بعد فترة قصيرة
             setTimeout(function() {
                 if (iframe.parentNode) {
                     iframe.parentNode.removeChild(iframe);
@@ -143,7 +184,7 @@
         
         playButton.addEventListener("click", openStream);
         
-        // منع النقر بزر الفأرة الأيمن واختصارات التصفح
+        // Protection (no right-click, no dev tools)
         document.addEventListener("contextmenu", (e) => e.preventDefault());
         document.addEventListener("keydown", (e) => {
             if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I") || 
